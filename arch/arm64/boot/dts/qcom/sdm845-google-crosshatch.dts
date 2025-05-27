@@ -353,7 +353,8 @@
 };
 
 &mdss_dsi0 {
-	status = "okay";
+	status = "disabled";
+	// status = "okay";
 	vdda-supply = <&vdda_mipi_dsi0_1p2>;
 
 	ports {
@@ -415,7 +416,8 @@
 };
 
 &mdss_dsi0_phy {
-	status = "okay";
+	status = "disabled";
+	// status = "okay";
 	vdds-supply = <&vdda_mipi_dsi0_pll>;
 };
 

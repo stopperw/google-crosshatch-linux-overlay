@@ -344,7 +344,7 @@
 	ports {
 		port@1 {
 			endpoint {
-				remote-endpoint = <&lg_sw43408_in_0>;
+				remote-endpoint = <&samsung_s6e3ha8_in_0>;
 				data-lanes = <0 1 2 3>;
 				qcom,te-source = "mdp_vsync_e";
 			};
@@ -352,7 +352,7 @@
 	};
 
 	panel@0 {
-		compatible = "lg,sw43408";
+		compatible = "samsung,s6e3ha8";
 		reg = <0>;
 
 		vddi-supply = <&vreg_l14a_1p88>;
@@ -369,7 +369,7 @@
 
 			port@0 {
 				reg = <0>;
-				lg_sw43408_in_0: endpoint {
+				samsung_s6e3ha8_in_0: endpoint {
 					remote-endpoint = <&mdss_dsi0_out>;
 				};
 			};
@@ -378,7 +378,7 @@
 };
 
 &mdss_dsi0_out {
-	remote-endpoint = <&lg_sw43408_in_0>;
+	remote-endpoint = <&samsung_s6e3ha8_in_0>;
 	data-lanes = <0 1 2 3>;
 };
 
@@ -438,7 +438,7 @@
 		st,irq-gpio = <&tlmm 125 0>;
 		st,reset-gpio = <&tlmm 99 0>;
 		st,switch_gpio = <&tlmm 136 0>;
-		st,max-coords = <1079 2159>;
+		st,max-coords = <1439 2959>;
 		st,regulator_dvdd = "vdd";
 		st,regulator_avdd = "avdd";
 	};

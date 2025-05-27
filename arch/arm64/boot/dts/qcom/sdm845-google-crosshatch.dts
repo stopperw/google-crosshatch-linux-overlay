@@ -354,6 +354,15 @@
 	panel@0 {
 		compatible = "samsung,s6e3ha8";
 		reg = <0>;
+		vci-supply = <&s2dos05_ldo4>;
+		vddr-supply = <&s2dos05_buck1>;
+		vdd3-supply = <&s2dos05_ldo1>;
+		te-gpios = <&tlmm 10 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&tlmm 6 GPIO_ACTIVE_HIGH>;
+		pinctrl-0 = <&sde_dsi_active &sde_te_active_sleep>;
+		pinctrl-1 = <&sde_dsi_suspend &sde_te_active_sleep>;
+		pinctrl-names = "default", "sleep";
+		/*reg = <0>;
 
 		vddi-supply = <&vreg_l14a_1p88>;
 		vpnl-supply = <&vreg_l28a_3p0>;
@@ -361,7 +370,7 @@
 		reset-gpios = <&tlmm 6 GPIO_ACTIVE_LOW>;
 
 		pinctrl-names = "default";
-		pinctrl-0 = <&panel_reset_pins &panel_te_pin>;
+		pinctrl-0 = <&panel_reset_pins &panel_te_pin>;*/
 
 		ports {
 			#address-cells = <1>;

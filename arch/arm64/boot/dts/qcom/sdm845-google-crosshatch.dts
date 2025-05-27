@@ -37,6 +37,16 @@
 
 	chosen {
 		stdout-path = "serial0:115200n8";
+
+		framebuffer: framebuffer@9c000000 {
+			status = "okay";
+			compatible = "simple-framebuffer";
+			reg = <0 0x9c000000 0 (1440 * 2960 * 4)>;
+			width = <1440>;
+			height = <2960>;
+			stride = <(1440 * 4)>;
+			format = "a8r8g8b8";
+		};
 	};
 
 	volume-keys {
@@ -90,6 +100,11 @@
 			no-map;
 		};
 
+		fb_mem: framebuffer-region@9c000000 {
+			reg = <0 0x9c000000 0 0x2400000>;
+			no-map;
+		};
+
 		/* rmtfs lower guard */
 		memory@f2700000 {
 			reg = <0 0xf2700000 0 0x1000>;
@@ -115,7 +130,7 @@
 	battery: battery {
 		compatible = "simple-battery";
 
-		charge-full-design-microamp-hours = <2970000>;
+		charge-full-design-microamp-hours = <3430000>;
 		voltage-min-design-microvolt = <3600000>;
 		voltage-max-design-microvolt = <4400000>;
 	};
@@ -352,7 +367,9 @@
 	};
 
 	panel@0 {
+		status = "okay";
 		compatible = "samsung,s6e3ha8";
+
 		/*reg = <0>;
 		vci-supply = <&s2dos05_ldo4>;
 		vddr-supply = <&s2dos05_buck1>;
@@ -421,7 +438,8 @@
 };
 
 &gpu {
-	status = "okay";
+	status = "disabled";
+	// status = "okay";
 
 	zap-shader {
 		memory-region = <&gpu_mem>;
@@ -527,11 +545,13 @@
 };
 
 &mdss {
-	status = "okay";
+	status = "disabled";
+	// status = "okay";
 };
 
 &mdss_mdp {
-	status = "okay";
+	status = "disabled";
+	// status = "okay";
 };
 
 &pm8998_gpios {

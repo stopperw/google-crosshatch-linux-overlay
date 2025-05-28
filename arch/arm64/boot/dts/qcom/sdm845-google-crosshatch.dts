@@ -36,12 +36,16 @@
 	};
 
 	chosen {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
 		stdout-path = "serial0:115200n8";
 
-		framebuffer: framebuffer@9c000000 {
+		framebuffer: framebuffer@9d400000 {
 			status = "okay";
 			compatible = "simple-framebuffer";
-			reg = <0 0x9c000000 0 (1440 * 2960 * 4)>;
+			reg = <0 0x9d400000 0 (1440 * 2960 * 4)>;
 			width = <1440>;
 			height = <2960>;
 			stride = <(1440 * 4)>;
@@ -100,8 +104,9 @@
 			no-map;
 		};
 
-		fb_mem: framebuffer-region@9c000000 {
-			reg = <0 0x9c000000 0 0x2400000>;
+		fb_mem: framebuffer_region@9d400000 {
+			status = "okay";
+			reg = <0 0x9d400000 0 0x2400000>;
 			no-map;
 		};
 
@@ -158,12 +163,11 @@
 
 &adsp_pas {
 	status = "okay";
-
 	firmware-name = "qcom/sdm845/pixel3xl/adsp.mbn";
 };
 
 &apps_rsc {
-	pm8998-rpmh-regulators {
+	regulators-0 {
 		compatible = "qcom,pm8998-rpmh-regulators";
 		qcom,pmic-id = "a";
 		vdd-s1-supply = <&vph_pwr>;
@@ -296,8 +300,11 @@
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 
-		vdda_mipi_dsi0_1p2:
 		vreg_l26a_1p2: ldo26 {
+			// Display doesn't work with it enabled
+			// Everything expect the display doesn't work with it disabled
+
+			// status = "disabled";
 			regulator-min-microvolt = <1200000>;
 			regulator-max-microvolt = <1200000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
@@ -317,7 +324,7 @@
 		};
 	};
 
-	pmi8998-rpmh-regulators {
+	regulators-1 {
 		compatible = "qcom,pmi8998-rpmh-regulators";
 		qcom,pmic-id = "b";
 
@@ -331,7 +338,7 @@
 		};
 	};
 
-	pm8005-rpmh-regulators {
+	regulators-2 {
 		compatible = "qcom,pm8005-rpmh-regulators";
 		qcom,pmic-id = "c";
 
@@ -353,9 +360,8 @@
 };
 
 &mdss_dsi0 {
-	status = "disabled";
-	// status = "okay";
-	vdda-supply = <&vdda_mipi_dsi0_1p2>;
+	// status = "disabled";
+	vdda-supply = <&vreg_l26a_1p2>;
 
 	ports {
 		port@1 {
@@ -368,33 +374,17 @@
 	};
 
 	panel@0 {
-		status = "okay";
+		// status = "disabled";
 		compatible = "samsung,s6e3ha8";
-
-		/*reg = <0>;
-		vci-supply = <&s2dos05_ldo4>;
-		vddr-supply = <&s2dos05_buck1>;
-		vdd3-supply = <&s2dos05_ldo1>;
-		te-gpios = <&tlmm 10 GPIO_ACTIVE_HIGH>;
-		reset-gpios = <&tlmm 6 GPIO_ACTIVE_HIGH>;
-		pinctrl-0 = <&sde_dsi_active &sde_te_active_sleep>;
-		pinctrl-1 = <&sde_dsi_suspend &sde_te_active_sleep>;
-		pinctrl-names = "default", "sleep";*/
-
-		// ---
-		// Probably totally wrong
-		vci-supply = <&vreg_l28a_3p0>;
-		vdd3-supply = <&vreg_l14a_1p88>;
-		vddr-supply = <&vreg_l19a_3p3>;
-
 		reg = <0>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&panel_reset_pins>;
-		reset-gpios = <&tlmm 6 GPIO_ACTIVE_LOW>;
-		// ---
 
 		vddi-supply = <&vreg_l14a_1p88>;
 		vpnl-supply = <&vreg_l28a_3p0>;
+
+		reset-gpios = <&tlmm 6 GPIO_ACTIVE_LOW>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&panel_reset_pins &panel_te_pin>;
 
 		ports {
 			#address-cells = <1>;
@@ -411,13 +401,13 @@
 };
 
 &mdss_dsi0_out {
+	// status = "disabled";
 	remote-endpoint = <&samsung_s6e3ha8_in_0>;
 	data-lanes = <0 1 2 3>;
 };
 
 &mdss_dsi0_phy {
-	status = "disabled";
-	// status = "okay";
+	// status = "disabled";
 	vdds-supply = <&vdda_mipi_dsi0_pll>;
 };
 
@@ -428,15 +418,18 @@
 };
 
 &gmu {
-	status = "okay";
+	status = "disabled";
+	// status = "okay";
 };
 
 &gpi_dma0 {
-	status = "okay";
+	status = "disabled";
+	// status = "okay";
 };
 
 &gpi_dma1 {
-	status = "okay";
+	status = "disabled";
+	// status = "okay";
 };
 
 &gpu {
@@ -450,7 +443,7 @@
 };
 
 &i2c2 {
-	status = "okay";
+	status = "disabled";
 	#dma-cells = <3>;
 
 	dmas =  <&gpi_dma0 0 2 QCOM_GPI_I2C>,
@@ -458,7 +451,8 @@
 	dma-names = "tx", "rx";
 
 	touchscreen@49 {
-		status = "okay";
+		status = "disabled";
+		// status = "okay";
 		compatible = "st,fts";
 		reg = <0x49>;
 		pinctrl-names = "default";
@@ -478,6 +472,47 @@
 		st,regulator_avdd = "avdd";
 	};
 };
+
+/* AP Touch I2C SDA is gpio27, SCL is gpio28. (QUP2)
+ * Reset gpio99, int gpio125.
+ */
+
+// &qupv3_se2_i2c {
+// &i2c2 {
+// 	status = "okay";
+// 	#dma-cells = <3>;
+//
+// 	dmas =  <&gpi_dma0 0 2 QCOM_GPI_I2C>,
+// 		<&gpi_dma0 1 2 QCOM_GPI_I2C>;
+// 	dma-names = "tx", "rx";
+//
+// 	qcom,clk-freq-out = <400000>;
+//
+// 	touchscreen@48 {
+// 		status = "ok";
+// 		compatible = "sec,sec_ts";
+// 		reg = <0x48>;
+// 		interrupt-parent = <&tlmm>;
+// 		interrupts = <125 IRQ_TYPE_LEVEL_LOW>;
+// 		pinctrl-names = "on_state";
+// 		//, "off_state";
+// 		pinctrl-0 = <&touchscreen_pins &touchscreen_reset>;
+// 		// pinctrl-0 = <&ts_int_active &sec_ts_reset_active>;
+// 		// pinctrl-1 = <&ts_int_suspend>;
+//
+// 		sec,irq_gpio = <&tlmm 125 0>;	/* required */
+// 		sec,switch_gpio = <&tlmm 136 0>;
+// 		sec,reset_gpio = <&tlmm 99 0>;
+// 		//sec,irq_type = ?;		/* optional - IRQF flags - default is IRQF_TRIGGER_LOW | IRQF_ONESHOT */
+// 		sec,max_coords = <1440 2960>;
+// 		sec,firmware_name = "s6sy761.fw";
+// 		// sec,regulator_dvdd = "pm8998_l14";	/* required */
+// 		// sec,regulator_avdd = "pm8998_l19";
+// 		sec,regulator_dvdd = "vdd";	/* required */
+// 		sec,regulator_avdd = "avdd";
+// 	};
+// };
+
 
 
 &i2c12 {
@@ -577,8 +612,8 @@
 };
 
 &pm8998_resin {
-	linux,code = <KEY_VOLUMEDOWN>;
 	status = "okay";
+	linux,code = <KEY_VOLUMEDOWN>;
 };
 
 &pmi8998_charger {
@@ -672,7 +707,7 @@
 	pinctrl-0 = <&quat_mi2s_active
 			&quat_mi2s_sd0_active &quat_mi2s_sd1_active>;
 	pinctrl-names = "default";
-	model = "Google Pixel 3";
+	model = "Google Pixel 3 XL";
 	// audio-routing =
 	// 	"RX_BIAS", "MCLK",
 	// 	"DMIC0", "MIC BIAS1",
@@ -885,7 +920,8 @@
 };
 
 &venus {
-	status = "okay";
+	status = "disabled";
+	// status = "okay";
 	firmware-name = "qcom/sdm845/pixel3xl/venus.mbn";
 };
 
@@ -907,6 +943,5 @@
 	vdd-3.3-ch0-supply = <&vreg_l25a_3p3>;
 
 	qcom,snoc-host-cap-8bit-quirk;
-	// _blueline
 	qcom,ath10k-calibration-variant = "google_crosshatch";
 };
